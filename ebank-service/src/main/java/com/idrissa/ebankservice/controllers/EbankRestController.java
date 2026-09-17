@@ -24,7 +24,7 @@ public class EbankRestController {
         return ebankService.findBankAccountById(id);
     }
 
-    @PostMapping("/account/save")
+    @PostMapping("/accounts/save")
     public BankAccount saveBankAccount(@RequestBody BankAccount bankAccount){
         return ebankService.saveBankAccount(bankAccount);
     }
