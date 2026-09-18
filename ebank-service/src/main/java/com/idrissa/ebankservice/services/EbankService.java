@@ -4,6 +4,8 @@ import com.idrissa.ebankservice.entities.BankAccount;
 import com.idrissa.ebankservice.feign.CustomerRestClient;
 import com.idrissa.ebankservice.model.Customer;
 import com.idrissa.ebankservice.repositories.BankAccountRepository;
+import org.springframework.ai.mcp.annotation.McpTool;
+import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -20,18 +22,21 @@ public class EbankService {
         this.customerRestClient = customerRestClient;
     }
 
+    @McpTool(description = "Get all accounts")
     public List<BankAccount> findAllAccounts(){
         return bankAccountRepository.findAll();
     }
 
-    public BankAccount findBankAccountById(String id){
+    @McpTool(description = "Get a customer by his id")
+    public BankAccount findBankAccountById(@McpToolParam(description = "the account id") String id){
        BankAccount bankAccount =  bankAccountRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Bank account not found"));
        bankAccount.setCustomer(customerRestClient.getCustomerById(bankAccount.getCustomerId()));
        return bankAccount;
     }
 
-    public BankAccount saveBankAccount(BankAccount bankAccount){
+    @McpTool(description = "Save a bank account")
+    public BankAccount saveBankAccount(@McpToolParam(description = "The Bank Account to save(Balance and Type)") BankAccount bankAccount){
         try {
             Customer customer = customerRestClient.getCustomerById(bankAccount.getCustomerId());
             bankAccount.setId(UUID.randomUUID().toString());
@@ -42,7 +47,8 @@ public class EbankService {
         }
     }
 
-    public List<BankAccount> findBankAccountByCustomerId(Long customerId){
+    @McpTool(description = "Find a bank account with the customer id")
+    public List<BankAccount> findBankAccountByCustomerId(@McpToolParam(description = "the customer id") Long customerId){
         return bankAccountRepository.findByCustomerId(customerId);
     }
 }
